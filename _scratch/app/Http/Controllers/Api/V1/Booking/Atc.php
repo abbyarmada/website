@@ -1,12 +1,14 @@
-<?php namespace CTP\Http\Controllers\Api\V1\Booking;
+<?php
 
-use Input;
-use Response;
+namespace CTP\Http\Controllers\Api\V1\Booking;
+
 use CTP\Data\Booking\Atc as AtcBookingData;
 use CTP\Data\Vdata\Airport\Facility\Position as PositionData;
+use Input;
+use Response;
 
-class Atc extends \CTP\Http\Controllers\Api\V1\V1ApiController {
-
+class Atc extends \CTP\Http\Controllers\Api\V1\V1ApiController
+{
     /**
      * @api               {get} /v1/booking/atc Get ATC Bookings.
      * @apiDescription    This endpoint will return a list of all upcoming ATC bookings.
@@ -87,15 +89,16 @@ class Atc extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *          }
      *     ]
      */
-    public function index() {
-        $bookings = AtcBookingData::with("facilityPosition")
-                                  ->with("facilityPosition.facility")
-                                  ->with("user")
-                                  ->where("finish_timestamp", ">=", \Carbon\Carbon::now())
-                                  ->where("start_timestamp", "<=", \Carbon\Carbon::now()
+    public function index()
+    {
+        $bookings = AtcBookingData::with('facilityPosition')
+                                  ->with('facilityPosition.facility')
+                                  ->with('user')
+                                  ->where('finish_timestamp', '>=', \Carbon\Carbon::now())
+                                  ->where('start_timestamp', '<=', \Carbon\Carbon::now()
                                                                                  ->addDays(28)
                                                                                  ->toDateTimeString())
-                                  ->orderBy("start_timestamp", "ASC")
+                                  ->orderBy('start_timestamp', 'ASC')
                                   ->get();
 
         return Response::api($bookings);
@@ -154,75 +157,77 @@ class Atc extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *       error: "BookingOverlapOther"
      *     }
      */
-    public function create() {
+    public function create()
+    {
         // Let's get all the data.
         // Store both the timestamps and the user.
         $bookingAtc = new AtcBookingData(Input::all());
 
         // Let's set the position
-        $position = PositionData::where("callsign", "LIKE", Input::get("position"))
+        $position = PositionData::where('callsign', 'LIKE', Input::get('position'))
                                 ->first();
 
-        if(!$position) {
-            return Response::api(["error" => "UnknownPosition"]);
+        if (!$position) {
+            return Response::api(['error' => 'UnknownPosition']);
         }
 
         $bookingAtc->airport_facility_position_id = $position->airport_facility_position_id;
 
         // Let's check the start timestamp is in the future.
-        if($bookingAtc->start_timestamp->isPast()) {
-            return Response::api(["error" => "BookingStartHistoric"], 403);
+        if ($bookingAtc->start_timestamp->isPast()) {
+            return Response::api(['error' => 'BookingStartHistoric'], 403);
         }
 
         // Finish time must be 1 hour more than start time, at least.
-        if($bookingAtc->start_timestamp->gt($bookingAtc->finish_timestamp->addHour())) {
-            return Response::api(["error" => "BookingStartFinishTooClose"], 403);
+        if ($bookingAtc->start_timestamp->gt($bookingAtc->finish_timestamp->addHour())) {
+            return Response::api(['error' => 'BookingStartFinishTooClose'], 403);
         }
 
         // Finish time cannot be more than 4 hours ahead.
-        if($bookingAtc->finish_timestamp->gt($bookingAtc->start_timestamp->addHours(4))) {
-            return Response::api(["error" => "BookingTooLong"], 403);
+        if ($bookingAtc->finish_timestamp->gt($bookingAtc->start_timestamp->addHours(4))) {
+            return Response::api(['error' => 'BookingTooLong'], 403);
         }
 
         // Does this booking overlap with any other bookings?
-        $checkCompleteMatch = AtcBookingData::where("airport_facility_position_id", "=", $position->airport_facility_position_id)
-                                            ->where("start_timestamp", "=", $bookingAtc->start_timestamp)
-                                            ->where("finish_timestamp", "=", $bookingAtc->finish_timestamp)
+        $checkCompleteMatch = AtcBookingData::where('airport_facility_position_id', '=', $position->airport_facility_position_id)
+                                            ->where('start_timestamp', '=', $bookingAtc->start_timestamp)
+                                            ->where('finish_timestamp', '=', $bookingAtc->finish_timestamp)
                                             ->count();
-        $checkStartWithin = AtcBookingData::where("airport_facility_position_id", "=", $position->airport_facility_position_id)
-                                          ->whereBetween("start_timestamp", [$bookingAtc->start_timestamp, $bookingAtc->finish_timestamp->subSecond()])
+        $checkStartWithin = AtcBookingData::where('airport_facility_position_id', '=', $position->airport_facility_position_id)
+                                          ->whereBetween('start_timestamp', [$bookingAtc->start_timestamp, $bookingAtc->finish_timestamp->subSecond()])
                                           ->count();
-        $checkFinishWithin = AtcBookingData::where("airport_facility_position_id", "=", $position->airport_facility_position_id)
-                                           ->whereBetween("finish_timestamp", [$bookingAtc->start_timestamp->addSecond(), $bookingAtc->finish_timestamp])
+        $checkFinishWithin = AtcBookingData::where('airport_facility_position_id', '=', $position->airport_facility_position_id)
+                                           ->whereBetween('finish_timestamp', [$bookingAtc->start_timestamp->addSecond(), $bookingAtc->finish_timestamp])
                                            ->count();
 
-        if($checkCompleteMatch > 0 OR $checkStartWithin > 0 OR $checkFinishWithin > 0) {
-            return Response::api(["error" => "BookingOverlapOther"], 403);
+        if ($checkCompleteMatch > 0 or $checkStartWithin > 0 or $checkFinishWithin > 0) {
+            return Response::api(['error' => 'BookingOverlapOther'], 403);
         }
 
         // Check if this user has a booking for the same time on another position.
-        $checkUserCompleteMatch = AtcBookingData::where("user_id", "=", $bookingAtc->user_id)
-                                                ->where("start_timestamp", "=", $bookingAtc->start_timestamp)
-                                                ->where("finish_timestamp", "=", $bookingAtc->finish_timestamp)
+        $checkUserCompleteMatch = AtcBookingData::where('user_id', '=', $bookingAtc->user_id)
+                                                ->where('start_timestamp', '=', $bookingAtc->start_timestamp)
+                                                ->where('finish_timestamp', '=', $bookingAtc->finish_timestamp)
                                                 ->count();
-        $checkUserStartWithin = AtcBookingData::where("user_id", "=", $bookingAtc->user_id)
-                                              ->whereBetween("start_timestamp", [$bookingAtc->start_timestamp, $bookingAtc->finish_timestamp->subSecond()])
+        $checkUserStartWithin = AtcBookingData::where('user_id', '=', $bookingAtc->user_id)
+                                              ->whereBetween('start_timestamp', [$bookingAtc->start_timestamp, $bookingAtc->finish_timestamp->subSecond()])
                                               ->count();
-        $checkUserFinishWithin = AtcBookingData::where("user_id", "=", $bookingAtc->user_id)
-                                               ->whereBetween("finish_timestamp", [$bookingAtc->start_timestamp->addSecond(), $bookingAtc->finish_timestamp])
+        $checkUserFinishWithin = AtcBookingData::where('user_id', '=', $bookingAtc->user_id)
+                                               ->whereBetween('finish_timestamp', [$bookingAtc->start_timestamp->addSecond(), $bookingAtc->finish_timestamp])
                                                ->count();
 
-        if($checkUserCompleteMatch > 0 OR $checkUserFinishWithin > 0 OR $checkUserFinishWithin > 0) {
-            return Response::api(["error" => "BookingOverlapSelf"], 403);
+        if ($checkUserCompleteMatch > 0 or $checkUserFinishWithin > 0 or $checkUserFinishWithin > 0) {
+            return Response::api(['error' => 'BookingOverlapSelf'], 403);
         }
 
         // Let's save!
         $bookingAtc->save();
 
-        return Response::api(["id" => $bookingAtc->booking_atc_id]);
+        return Response::api(['id' => $bookingAtc->booking_atc_id]);
     }
 
-    public function getBooking(AtcBookingData $bookingData){
+    public function getBooking(AtcBookingData $bookingData)
+    {
         return Response::api($bookingData->toArray());
     }
 
@@ -265,23 +270,24 @@ class Atc extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *       error: "NotAuthorisedToDelete"
      *     }
      */
-    public function delete(AtcBookingData $atcBooking){
+    public function delete(AtcBookingData $atcBooking)
+    {
         // Is it already deleted? Or maybe it's just wrong?
-        if(!$atcBooking OR $atcBooking->exists === false){
-            return Response::api(["error" => "UnknownBooking"], 404);
+        if (!$atcBooking or $atcBooking->exists === false) {
+            return Response::api(['error' => 'UnknownBooking'], 404);
         }
 
         // Is the booking in the past?
-        if($atcBooking->finish_timestamp->isPast()){
-            return Response::api(["error" => "HistoricBooking"], 403);
+        if ($atcBooking->finish_timestamp->isPast()) {
+            return Response::api(['error' => 'HistoricBooking'], 403);
         }
 
         // Does this API own the booking, or do we have permission to ignore this?
-        if(!$this->apiAccount->hasPermission("ACT:v1_booking_atc_delete_ignore_api_account") && $atcBooking->api_account_id != $this->apiAccount->api_account_id){
-            return Response::api(["error" => "NotAuthorisedToDelete"], 401);
+        if (!$this->apiAccount->hasPermission('ACT:v1_booking_atc_delete_ignore_api_account') && $atcBooking->api_account_id != $this->apiAccount->api_account_id) {
+            return Response::api(['error' => 'NotAuthorisedToDelete'], 401);
         }
 
         // Let's delete, I guess...
-        return Response::api(["result" => $atcBooking->delete()]);
+        return Response::api(['result' => $atcBooking->delete()]);
     }
 }

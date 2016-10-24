@@ -1,12 +1,13 @@
-<?php namespace CTP\Http\Controllers\Api\V1\Vdata;
+<?php
 
-use Response;
+namespace CTP\Http\Controllers\Api\V1\Vdata;
+
 use CTP\Data\Vdata\Airport as AirportData;
-use CTP\Data\Vdata\Airport\Facility as FacilityData;
 use CTP\Data\Vdata\Airport\Facility\Position as PositionData;
+use Response;
 
-class Airport extends \CTP\Http\Controllers\Api\V1\V1ApiController {
-
+class Airport extends \CTP\Http\Controllers\Api\V1\V1ApiController
+{
     /**
      * @api               {get} /v1/vdata/airport Get airports.
      * @apiDescription    This endpoint serves to provide details of airports currently in the database.
@@ -121,8 +122,9 @@ class Airport extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *          }
      *      ]
      */
-    public function getList() {
-        $airport = AirportData::orderBy("icao", "ASC")->paginate(5000);
+    public function getList()
+    {
+        $airport = AirportData::orderBy('icao', 'ASC')->paginate(5000);
 
         return Response::api($airport->toArray());
     }
@@ -356,14 +358,15 @@ class Airport extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *              ]
      *          }
      */
-    public function getAirport(AirportData $airport) {
-        $airport->load("region");
-        $airport->load("region.country");
-        $airport->load("region.country.continent");
-        $airport->load("facilities");
-        $airport->load("facilities.positions");
-        $airport->load("runways");
-        $airport->load("runways.recipricol");
+    public function getAirport(AirportData $airport)
+    {
+        $airport->load('region');
+        $airport->load('region.country');
+        $airport->load('region.country.continent');
+        $airport->load('facilities');
+        $airport->load('facilities.positions');
+        $airport->load('runways');
+        $airport->load('runways.recipricol');
 
         return Response::api($airport->toArray());
     }
@@ -488,8 +491,9 @@ class Airport extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *          }
      *      ]
      */
-    public function getAirportByCountry($country) {
-        return Response::api(AirportData::where("country_id", "=", $country->country_id)
+    public function getAirportByCountry($country)
+    {
+        return Response::api(AirportData::where('country_id', '=', $country->country_id)
                                          ->get()
                                          ->toArray());
     }
@@ -517,9 +521,10 @@ class Airport extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *          }
      *      ]
      */
-    public function getPositions() {
-        $positions = PositionData::with("facility")
-                                 ->orderBy("callsign", "ASC")
+    public function getPositions()
+    {
+        $positions = PositionData::with('facility')
+                                 ->orderBy('callsign', 'ASC')
                                  ->get();
 
         return Response::api($positions->toArray());

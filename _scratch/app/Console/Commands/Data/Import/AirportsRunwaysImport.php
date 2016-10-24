@@ -1,13 +1,11 @@
 <?php
 
-use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 use \Models\Vdata\Airport;
 use \Models\Vdata\AirportRunway;
+use Illuminate\Console\Command;
 
-class AirportsRunwaysImport extends Command {
-
+class AirportsRunwaysImport extends Command
+{
     /**
      * The console command name.
      *
@@ -27,7 +25,8 @@ class AirportsRunwaysImport extends Command {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -36,16 +35,17 @@ class AirportsRunwaysImport extends Command {
      *
      * @return mixed
      */
-    public function fire() {
-        $runways = file("http://ourairports.com/data/runways.csv");
+    public function fire()
+    {
+        $runways = file('http://ourairports.com/data/runways.csv');
         foreach ($runways as $run) {
             $run = str_getcsv($run);
-            if (trim($run[0]) == "id") {
+            if (trim($run[0]) == 'id') {
                 continue;
             } // Skip the header.
             // First, find the airport!
             try {
-                $_a = Airport::where("icao", "=", strtoupper($run[2]))->firstOrFail();
+                $_a = Airport::where('icao', '=', strtoupper($run[2]))->firstOrFail();
             } catch (Exception $ex) {
                 continue; // Can't use this, because there's no airport for it!
             }
@@ -53,12 +53,14 @@ class AirportsRunwaysImport extends Command {
             /*             * ****** Let's store RUNWAY 1 ******* */
             // Do we need to find or create/update the runway?
             try {
-                $_rwy1 = AirportRunway::where("navdata_airport_id", "=", $_a->navdata_airport_id)->where("identifier", "=", $run[8])->firstOrFail();
+                $_rwy1 = AirportRunway::where('navdata_airport_id', '=', $_a->navdata_airport_id)->where('identifier', '=', $run[8])->firstOrFail();
             } catch (Exception $e) {
-                $_rwy1 = new AirportRunway;
+                $_rwy1 = new AirportRunway();
             }
 
-            if($_rwy1->exists){ continue; } // IGNORE - NO UPDATING OF CREATED RUNWAYS!
+            if ($_rwy1->exists) {
+                continue;
+            } // IGNORE - NO UPDATING OF CREATED RUNWAYS!
 
             $_rwy1->navdata_airport_id = $_a->navdata_airport_id;
             $_rwy1->identifier = $run[8];
@@ -71,9 +73,9 @@ class AirportsRunwaysImport extends Command {
             /*             * ****** Let's store RUNWAY 2 ******* */
             // Do we need to find or create/update the runway?
             try {
-                $_rwy2 = AirportRunway::where("navdata_airport_id", "=", $_a->navdata_airport_id)->where("identifier", "=", $run[14])->firstOrFail();
+                $_rwy2 = AirportRunway::where('navdata_airport_id', '=', $_a->navdata_airport_id)->where('identifier', '=', $run[14])->firstOrFail();
             } catch (Exception $e) {
-                $_rwy2 = new AirportRunway;
+                $_rwy2 = new AirportRunway();
             }
 
             $_rwy2->navdata_airport_id = $_a->navdata_airport_id;
@@ -97,9 +99,10 @@ class AirportsRunwaysImport extends Command {
      *
      * @return array
      */
-    protected function getArguments() {
-        return array(
-        );
+    protected function getArguments()
+    {
+        return [
+        ];
     }
 
     /**
@@ -107,9 +110,9 @@ class AirportsRunwaysImport extends Command {
      *
      * @return array
      */
-    protected function getOptions() {
-        return array(
-        );
+    protected function getOptions()
+    {
+        return [
+        ];
     }
-
 }

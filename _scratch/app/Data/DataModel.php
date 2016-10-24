@@ -1,8 +1,11 @@
-<?php namespace CTP\Data;
+<?php
 
-use \Illuminate\Database\Eloquent\Model;
+namespace CTP\Data;
+
+use Illuminate\Database\Eloquent\Model;
 use Watson\Validating\ValidatingTrait;
 
-abstract class DataModel extends Model {
+abstract class DataModel extends Model
+{
     use ValidatingTrait;
 }
