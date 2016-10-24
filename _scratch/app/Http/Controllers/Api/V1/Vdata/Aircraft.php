@@ -1,10 +1,12 @@
-<?php namespace CTP\Http\Controllers\Api\V1\Vdata;
+<?php
 
-use \Response;
-use \CTP\Data\Vdata\Aircraft as AircraftData;
+namespace CTP\Http\Controllers\Api\V1\Vdata;
 
-class Aircraft extends \CTP\Http\Controllers\Api\V1\V1ApiController {
+use CTP\Data\Vdata\Aircraft as AircraftData;
+use Response;
 
+class Aircraft extends \CTP\Http\Controllers\Api\V1\V1ApiController
+{
     /**
      * @api {get} /v1/vdata/aircraft Get aircraft.
      * @apiDescription This endpoint serves to provide details of aircraft currently in the database.
@@ -33,8 +35,10 @@ class Aircraft extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *          }
      *     ]
      */
-    public function getList() {
-        $aircraft = AircraftData::orderBy("icao", "ASC")->get();
+    public function getList()
+    {
+        $aircraft = AircraftData::orderBy('icao', 'ASC')->get();
+
         return Response::api($aircraft->toArray());
     }
 
@@ -55,14 +59,14 @@ class Aircraft extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
- *          {
- *              "icao": "A321",
- *              "name": "Airbus A321",
- *              "manufacturer": "Airbus Industries"
- *          }
+     *          {
+     *              "icao": "A321",
+     *              "name": "Airbus A321",
+     *              "manufacturer": "Airbus Industries"
+     *          }
      */
-    public function getAircraft(AircraftData $aircraft) {
+    public function getAircraft(AircraftData $aircraft)
+    {
         return Response::api($aircraft->toArray());
     }
-
 }

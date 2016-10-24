@@ -1,7 +1,8 @@
-<?php namespace CTP\Events;
+<?php
 
-abstract class Event {
+namespace CTP\Events;
 
-	//
-
+abstract class Event
+{
+    //
 }

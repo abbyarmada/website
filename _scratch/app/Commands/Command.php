@@ -1,7 +1,8 @@
-<?php namespace CTP\Commands;
+<?php
 
-abstract class Command {
+namespace CTP\Commands;
 
-	//
-
+abstract class Command
+{
+    //
 }

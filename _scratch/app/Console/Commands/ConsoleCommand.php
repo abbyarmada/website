@@ -1,9 +1,10 @@
-<?php namespace CTP\Console\Commands;
+<?php
+
+namespace CTP\Console\Commands;
 
 use Illuminate\Console\Command;
 
-abstract class ConsoleCommand extends Command {
-
-	//
+abstract class ConsoleCommand extends Command
+{
+    //
 }
-

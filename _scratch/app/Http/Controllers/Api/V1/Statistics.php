@@ -1,9 +1,11 @@
-<?php namespace CTP\Http\Controllers\Api\V1;
+<?php
 
-use \Response;
+namespace CTP\Http\Controllers\Api\V1;
 
-class Statistics extends V1ApiController {
+use Response;
 
+class Statistics extends V1ApiController
+{
     /**
      * @api {get} /v1/statistics Get all current statistics
      * @apiDescription This endpoint serves to provide statistical information about booking data VFMU currently holds.
@@ -53,8 +55,8 @@ class Statistics extends V1ApiController {
      *          }
      *     }
      */
-    public function getStatistics() {
-        return Response::api(["total" => ['bookings' => ['atc' => 54, 'flights' => 234]]]);
+    public function getStatistics()
+    {
+        return Response::api(['total' => ['bookings' => ['atc' => 54, 'flights' => 234]]]);
     }
-
 }

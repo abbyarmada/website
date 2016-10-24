@@ -5,18 +5,17 @@ namespace \CTP\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Flight extends Model {
+class Flight extends Model
+{
+    protected $table = 'flight';
+    public $timestamps = true;
 
-	protected $table = 'flight';
-	public $timestamps = true;
+    use SoftDeletes;
 
-	use SoftDeletes;
+    protected $dates = ['deleted_at'];
 
-	protected $dates = ['deleted_at'];
-
-	public function booking()
-	{
-		return $this->belongsTo('\CTP\Models\Booking');
-	}
-
+    public function booking()
+    {
+        return $this->belongsTo('\CTP\Models\Booking');
+    }
 }

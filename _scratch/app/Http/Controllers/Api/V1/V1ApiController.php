@@ -1,5 +1,7 @@
-<?php namespace CTP\Http\Controllers\Api\V1;
+<?php
 
-abstract class V1ApiController extends \CTP\Http\Controllers\Api\ApiController {
+namespace CTP\Http\Controllers\Api\V1;
 
+abstract class V1ApiController extends \CTP\Http\Controllers\Api\ApiController
+{
 }

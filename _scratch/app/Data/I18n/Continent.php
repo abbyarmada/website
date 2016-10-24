@@ -1,17 +1,18 @@
-<?php namespace CTP\Data\I18n;
+<?php
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+namespace CTP\Data\I18n;
 
-class Continent extends \CTP\Data\DataModel {
-
-    public $table = "i18n_continent";
-    public $primaryKey = "continent_id";
+class Continent extends \CTP\Data\DataModel
+{
+    public $table = 'i18n_continent';
+    public $primaryKey = 'continent_id';
     public $incrementing = true;
     public $fillable = [];
     public $guarded = [];
-    public $visible = ["name", "code"];
+    public $visible = ['name', 'code'];
 
-    public function countries(){
-        return $this->hasMany("\CTP\Data\I18n\Country", "continent_id", "continent_id");
+    public function countries()
+    {
+        return $this->hasMany("\CTP\Data\I18n\Country", 'continent_id', 'continent_id');
     }
 }

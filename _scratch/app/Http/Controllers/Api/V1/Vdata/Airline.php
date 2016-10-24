@@ -1,10 +1,12 @@
-<?php namespace CTP\Http\Controllers\Api\V1\Vdata;
+<?php
 
-use \Response;
-use \CTP\Data\Vdata\Airline as AirlineData;
+namespace CTP\Http\Controllers\Api\V1\Vdata;
 
-class Airline extends \CTP\Http\Controllers\Api\V1\V1ApiController {
+use CTP\Data\Vdata\Airline as AirlineData;
+use Response;
 
+class Airline extends \CTP\Http\Controllers\Api\V1\V1ApiController
+{
     /**
      * @api {get} /v1/vdata/airline Get airlines.
      * @apiDescription This endpoint serves to provide details of airlines currently in the database.
@@ -39,8 +41,10 @@ class Airline extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *          }
      *     ]
      */
-    public function getList() {
-        $airlines = AirlineData::orderBy("icao", "ASC")->get();
+    public function getList()
+    {
+        $airlines = AirlineData::orderBy('icao', 'ASC')->get();
+
         return Response::api($airlines->toArray());
     }
 
@@ -77,7 +81,7 @@ class Airline extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *              "virtual": false,
      *              "country": {
      *                  "code": "GB",
- *                      "name": "United Kingdom",
+     *                      "name": "United Kingdom",
      *                  "continent" : {
      *                      "code": "EU",
      *                      "name": "Europe"
@@ -129,9 +133,11 @@ class Airline extends \CTP\Http\Controllers\Api\V1\V1ApiController {
      *              }
      *          }
      */
-    public function getAirline(AirlineData $airline) {
-        $airline->load("country");
-        $airline->load("country.continent");
+    public function getAirline(AirlineData $airline)
+    {
+        $airline->load('country');
+        $airline->load('country.continent');
+
         return Response::api($airline->toArray());
     }
 }
